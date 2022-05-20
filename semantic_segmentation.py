@@ -47,6 +47,20 @@ for image in dir_list:
 		# Draw Rectangle for the object.
 		cv2.rectangle(img, (x, y), (x2, y2), color, 2)
 
+
+		roi = img[y: y2, x: x2]
+		roi_height, roi_width, _ = roi.shape
+
+		# Get the mask
+		mask = masks[i, int(class_id)]
+		mask = cv2.resize(mask, (roi_width, roi_height))
+		_, mask = cv2.threshold(mask, 0.5, 255, cv2.THRESH_BINARY)
+
+		# Get mask coordinates
+		contours, _ = cv2.findContours(np.array(mask, np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+		for cnt in contours:
+			cv2.fillPoly(roi, [cnt], color)
+
 	# Display Image.
 	cv2.imshow("Image", img)
 	cv2.waitKey(0)
