@@ -9,22 +9,11 @@ net = cv2.dnn.readNetFromTensorflow("dnn/frozen_inference_graph_coco.pb",
 colors = np.random.randint(0, 255, (80, 3))
 
 
-images = ["horse.jpg", "road.jpg", "pexels.jpg", "construction.jpg"]
-
-# print(colors)
-
-# Load image
-# img = cv2.imread("horse.jpg")
+images = ["people1.jpg", "pexels.jpg"]
 for image in images:
 
 	img = cv2.imread(image)
-	# img = cv2.imread("pexels.jpg")
-	# img = cv2.imread("construction.jpg")
 	height, width, _ = img.shape
-
-	# Create black image
-	black_image = np.zeros((height, width, 3), np.uint8)
-	black_image[:] = (100, 100, 0)
 
 	# Detect objects
 	blob = cv2.dnn.blobFromImage(img, swapRB=True)
@@ -37,38 +26,24 @@ for image in images:
 		box = boxes[0, 0, i]
 		class_id = box[1]
 		score = box[2]
-		if score < 0.5:
+
+		# for skiping ojects with less than 0.5 score
+		if score <= 0.5:
 			continue
 
-		# # Get box Coordinates
+		# Get box Coordinates.
 		x = int(box[3] * width)
 		y = int(box[4] * height)
 		x2 = int(box[5] * width)
 		y2 = int(box[6] * height)
 
-		# roi = black_image[y: y2, x: x2]
-		# roi_height, roi_width, _ = roi.shape
+		# Get Color for the class id.
+		color = colors[int(class_id)]
+		color = (int(color[0]), int(color[1]), int(color[2]))
 
-		# # Get the mask
-		# mask = masks[i, int(class_id)]
-		# mask = cv2.resize(mask, (roi_width, roi_height))
-		# _, mask = cv2.threshold(mask, 0.5, 255, cv2.THRESH_BINARY)
-		color = np.random.randint(0, 255, (1, 3))[0]
-		print(color[0])
+		# Draw Rectangle for the object.
+		cv2.rectangle(img, (x, y), (x2, y2), color, 2)
 
-		cv2.rectangle(img, (x, y), (x2, y2), color, 3)
-
-		# # Get mask coordinates
-		# contours, _ = cv2.findContours(np.array(mask, np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-		# color = np.random.randint(0, 255, (1, 3))[0]
-		# print(color)
-		# for cnt in contours:
-		# 	cv2.fillPoly(roi, [cnt], (int(color[0]), int(color[1]), int(color[2])))
-
-		# cv2.imshow("roi", roi)
-		# cv2.waitKey(0)
-
-
+	# Display Image.
 	cv2.imshow("Image", img)
-	# cv2.imshow("Black image", black_image)
 	cv2.waitKey(0)
