@@ -1,18 +1,21 @@
 import cv2
 import numpy as np
+import os
+ 
+# Get the list of all images
+path = os.getcwd() + "//images"
+dir_list = os.listdir(path)
 
 # Loading Mask RCNN
-net = cv2.dnn.readNetFromTensorflow("dnn/frozen_inference_graph_coco.pb",
-									"dnn/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt")
+net = cv2.dnn.readNetFromTensorflow("cnn/frozen_inference_graph_coco.pb",
+									"cnn/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt")
 
 # Generate random colors
 colors = np.random.randint(0, 255, (80, 3))
 
+for image in dir_list:
 
-images = ["people1.jpg", "pexels.jpg"]
-for image in images:
-
-	img = cv2.imread(image)
+	img = cv2.imread("images/" + image)
 	height, width, _ = img.shape
 
 	# Detect objects
