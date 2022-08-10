@@ -67,24 +67,17 @@ if __name__ == '__main__':
 	net = cv2.dnn.readNetFromTensorflow("dnn/frozen_inference_graph_coco.pb",
 										"dnn/mask_rcnn_inception_v2_coco_2018_01_28.pbtxt")
 
-	# Load image
-	# img = cv2.imread("horse.jpg")
-	img = cv2.imread("road.jpg")
-	# img = cv2.imread("pexels.jpg")
-	# img = cv2.imread("construction.jpg")
+	images = ["pexels1.jpg","pexels2.jpg","pexels3.jpg","pexels4.jpg","pexels5.jpg"]
+	for img in images:
+		img = cv2.imread(img)
+		# Detect objects
+		blob = cv2.dnn.blobFromImage(img, swapRB=True)
+		net.setInput(blob)
 
+		boxes, masks = net.forward(["detection_out_final", "detection_masks"])
+		# boxes= net.forward("detection_out_final")
+		detection_count = boxes.shape[2]
 
-	# Detect objects
-	blob = cv2.dnn.blobFromImage(img, swapRB=True)
-	net.setInput(blob)
-
-	boxes, masks = net.forward(["detection_out_final", "detection_masks"])
-	# boxes= net.forward("detection_out_final")
-	detection_count = boxes.shape[2]
-
-	showMaskImage(masks,img,detection_count)
-	showOuputBoundedImage(img,detection_count)
-
-
-
-	cv2.waitKey(0)
+		showMaskImage(masks,img,detection_count)
+		showOuputBoundedImage(img,detection_count)
+		cv2.waitKey(0)
